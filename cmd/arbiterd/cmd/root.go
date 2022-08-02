@@ -31,8 +31,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	"github.com/sapiens-cosmos/arbiter/app"
-	"github.com/sapiens-cosmos/arbiter/app/params"
+	"github.com/mattverse/dsrv-tutorial/app"
+	"github.com/mattverse/dsrv-tutorial/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

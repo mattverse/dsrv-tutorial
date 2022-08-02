@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/sapiens-cosmos/arbiter/app"
-	"github.com/sapiens-cosmos/arbiter/cmd/arbiterd/cmd"
+	"github.com/mattverse/dsrv-tutorial/app"
+	"github.com/mattverse/dsrv-tutorial/cmd/arbiterd/cmd"
 )
 
 func main() {

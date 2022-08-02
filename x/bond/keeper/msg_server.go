@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sapiens-cosmos/arbiter/x/bond/types"
+	"github.com/mattverse/dsrv-tutorial/x/bond/types"
 )
 
 type msgServer struct {
@@ -20,34 +20,18 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-func (k msgServer) BondIn(goCtx context.Context, msg *types.MsgBondIn) (*types.MsgBondInResponse, error) {
+func (k msgServer) SendMoney(goCtx context.Context, msg *types.MsgSendMoney) (*types.MsgSendMoneyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	bonder, err := sdk.AccAddressFromBech32(msg.Bonder)
+	bonder, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.keeper.BondIn(ctx, bonder, msg.Coin)
+	err = k.keeper.TakeMoneyFromUser(ctx, bonder, msg.Coin)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.MsgBondInResponse{}, nil
-}
-
-func (k msgServer) Redeem(goCtx context.Context, msg *types.MsgRedeem) (*types.MsgRedeemResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	bonder, err := sdk.AccAddressFromBech32(msg.Bonder)
-	if err != nil {
-		return nil, err
-	}
-
-	err = k.keeper.RedeemDebt(ctx, bonder)
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.MsgRedeemResponse{}, nil
+	return &types.MsgSendMoneyResponse{}, nil
 }

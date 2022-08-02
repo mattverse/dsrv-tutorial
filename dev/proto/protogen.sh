@@ -19,5 +19,5 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 done
 
-cp -r github.com/sapiens-cosmos/arbiter/* ./
+cp -r github.com/mattverse/dsrv-tutorial/* ./
 rm -rf github.com

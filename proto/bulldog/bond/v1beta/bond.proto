@@ -1,0 +1,14 @@
+syntax = "proto3";
+package bulldog.bond.v1beta1;
+
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/mattverse/dsrv-tutorial/x/bond/types";
+
+message StolenMoney {
+  cosmos.base.v1beta1.Coin coin = 1;
+}
+
+
+
+

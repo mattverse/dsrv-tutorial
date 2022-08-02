@@ -1,0 +1,25 @@
+syntax = "proto3";
+package bulldog.bond.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/mattverse/dsrv-tutorial/x/bond/types";
+
+// Msg defines the bond Msg service.
+service Msg {
+  rpc SendMoney(MsgSendMoney) returns (MsgSendMoneyResponse);
+}
+
+message MsgSendMoney {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string   sender                    = 1 [(gogoproto.moretags) = "yaml:\"sender\""];
+  cosmos.base.v1beta1.Coin coin = 2 [
+    (gogoproto.moretags) = "yaml:\"coin\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message MsgSendMoneyResponse {}

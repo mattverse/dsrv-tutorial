@@ -21,7 +21,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	appparams "github.com/sapiens-cosmos/arbiter/app/params"
+	appparams "github.com/mattverse/dsrv-tutorial/app/params"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -89,15 +89,12 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/sapiens-cosmos/arbiter/x/bond"
-	bondkeeper "github.com/sapiens-cosmos/arbiter/x/bond/keeper"
-	bondtypes "github.com/sapiens-cosmos/arbiter/x/bond/types"
-	"github.com/sapiens-cosmos/arbiter/x/stake"
-	stakekeeper "github.com/sapiens-cosmos/arbiter/x/stake/keeper"
-	staketypes "github.com/sapiens-cosmos/arbiter/x/stake/types"
+	"github.com/mattverse/dsrv-tutorial/x/bond"
+	bondkeeper "github.com/mattverse/dsrv-tutorial/x/bond/keeper"
+	bondtypes "github.com/mattverse/dsrv-tutorial/x/bond/types"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/sapiens-cosmos/arbiter/client/docs/statik"
+	_ "github.com/mattverse/dsrv-tutorial/client/docs/statik"
 )
 
 const appName = "App"
@@ -128,7 +125,6 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		stake.AppModuleBasic{},
 		bond.AppModuleBasic{},
 	)
 
@@ -141,7 +137,6 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		staketypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 		bondtypes.ModuleName:           {authtypes.Minter},
 	}
 )
@@ -182,7 +177,6 @@ type App struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	StakeKeeper      stakekeeper.Keeper
 	BondKeeper       bondkeeper.Keeper
 
 	// make scoped keepers public for test purposes
@@ -225,7 +219,7 @@ func NewApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		staketypes.StoreKey, bondtypes.StoreKey,
+		bondtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -319,8 +313,7 @@ func NewApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.StakeKeeper = stakekeeper.NewKeeper(appCodec, app.GetSubspace(staketypes.ModuleName), keys[staketypes.StoreKey], app.AccountKeeper, app.BankKeeper, app.GetSubspace(staketypes.ModuleName))
-	app.BondKeeper = bondkeeper.NewKeeper(appCodec, keys[bondtypes.StoreKey], app.BankKeeper, app.GetSubspace(bondtypes.ModuleName), staketypes.ModuleName, app.StakeKeeper)
+	app.BondKeeper = bondkeeper.NewKeeper(appCodec, keys[bondtypes.StoreKey], app.BankKeeper, app.GetSubspace(bondtypes.ModuleName))
 	/****  Module Options ****/
 
 	/****  Module Options ****/
@@ -355,7 +348,6 @@ func NewApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		stake.NewAppModule(app.appCodec, app.StakeKeeper),
 		bond.NewAppModule(app.appCodec, app.BondKeeper),
 	)
 
@@ -365,7 +357,7 @@ func NewApp(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, staketypes.ModuleName, bondtypes.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, bondtypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
 
@@ -378,7 +370,7 @@ func NewApp(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
 		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-		staketypes.ModuleName, bondtypes.ModuleName,
+		bondtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -610,7 +602,6 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(staketypes.ModuleName)
 	paramsKeeper.Subspace(bondtypes.ModuleName)
 
 	return paramsKeeper

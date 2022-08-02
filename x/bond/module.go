@@ -18,9 +18,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/sapiens-cosmos/arbiter/x/bond/client/cli"
-	"github.com/sapiens-cosmos/arbiter/x/bond/keeper"
-	"github.com/sapiens-cosmos/arbiter/x/bond/types"
+	"github.com/mattverse/dsrv-tutorial/x/bond/client/cli"
+	"github.com/mattverse/dsrv-tutorial/x/bond/keeper"
+	"github.com/mattverse/dsrv-tutorial/x/bond/types"
 )
 
 var (
@@ -153,10 +153,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json
 
 // BeginBlock performs a no-op.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	err := am.keeper.DecayAllDebt(ctx)
-	if err != nil {
-		panic(err)
-	}
 }
 
 // EndBlock returns the end blocker for the bond module. It returns no validator

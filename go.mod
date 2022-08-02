@@ -1,4 +1,4 @@
-module github.com/sapiens-cosmos/arbiter
+module github.com/mattverse/dsrv-tutorial
 
 go 1.16
 

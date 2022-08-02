@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/sapiens-cosmos/arbiter/x/bond/keeper"
-	"github.com/sapiens-cosmos/arbiter/x/bond/types"
+	"github.com/mattverse/dsrv-tutorial/x/bond/keeper"
+	"github.com/mattverse/dsrv-tutorial/x/bond/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -15,11 +15,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgBondIn:
-			res, err := msgServer.BondIn(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgRedeem:
-			res, err := msgServer.Redeem(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgSendMoney:
+			res, err := msgServer.SendMoney(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)

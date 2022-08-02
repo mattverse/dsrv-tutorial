@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/sapiens-cosmos/arbiter/app/params"
+	"github.com/mattverse/dsrv-tutorial/app/params"
 
 	"github.com/cosmos/cosmos-sdk/std"
 )
